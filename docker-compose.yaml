@@ -5,18 +5,22 @@ services:
     environment:
       - INGEST_SERVER=http://localhost:8081
       - PROXY_PATH=2943b8e3-ac65-49fe-8eb7-319484b823fc
+      - ORG_MAPPING_FILE=/etc/nginx/org_mapping
     image: webhook-dispatch
     ports:
       - 127.0.0.1:8080:80
     volumes:
-      - ./dispatch/templates:/etc/nginx/templates
+      - ./mapping:/etc/nginx/org_mapping
+    #   - ./dispatch/conf.d:/etc/nginx/conf.d
+    #   - ./nginx.conf:/etc/nginx/nginx.conf
+    #   - ./env.conf:/etc/nginx/env.conf
   test1:
-    command: --log-json serve --storage-driver redis --pubsub-driver redis --redis-dsn redis://redis:6379/0
+    command: --log-json serve --create-session 2943b8e3-ac65-49fe-8eb7-319484b823fc
     image: tarampampam/webhook-tester
     ports:
       - 127.0.0.1:8081:8080
   test2:
-    command: --log-json serve --storage-driver redis --pubsub-driver redis --redis-dsn redis://redis:6379/0
+    command: --log-json serve --create-session 2943b8e3-ac65-49fe-8eb7-319484b823fc
     image: tarampampam/webhook-tester
     ports:
       - 127.0.0.1:8082:8080
