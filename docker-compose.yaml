@@ -1,0 +1,28 @@
+version: '3'
+services:
+  dispatch:
+    build: dispatch
+    environment:
+      - INGEST_SERVER=http://localhost:8081
+      - PROXY_PATH=2943b8e3-ac65-49fe-8eb7-319484b823fc
+    image: webhook-dispatch
+    ports:
+      - 127.0.0.1:8080:80
+    volumes:
+      - ./dispatch/templates:/etc/nginx/templates
+  test1:
+    command: --log-json serve --storage-driver redis --pubsub-driver redis --redis-dsn redis://redis:6379/0
+    image: tarampampam/webhook-tester
+    ports:
+      - 127.0.0.1:8081:8080
+  test2:
+    command: --log-json serve --storage-driver redis --pubsub-driver redis --redis-dsn redis://redis:6379/0
+    image: tarampampam/webhook-tester
+    ports:
+      - 127.0.0.1:8082:8080
+  redis:
+    image: redis:alpine
+    volumes:
+      - redis:/data
+volumes:
+  redis: ~
